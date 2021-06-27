@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import user from "../images/user.jpg";
 
-const ContactDetail = (props) => {
-  const { name, email, empresa, cpf } = props.location.state.contact;
+const UserDetail = (props) => {
+  const { name, email, empresa, cpf } = props.location.state.user;
   return (
     <div className="main">
       <div className="ui card centered">
@@ -20,7 +20,7 @@ const ContactDetail = (props) => {
       <div className="center-div">
         <Link to="/">
           <button className="ui button blue center">
-            Back to Contact List
+            Back to User List
           </button>
         </Link>
       </div>
@@ -28,4 +28,4 @@ const ContactDetail = (props) => {
   );
 };
 
-export default ContactDetail;
+export default UserDetail;

@@ -1,118 +1,144 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { uuid } from "uuidv4";
-import api from "../api/contacts";
+import api from "../api/users";
 import "./App.css";
 import Header from "./Header";
-import AddContact from "./AddContact";
-import ContactList from "./ContactList";
-import ContactDetail from "./ContactDetail";
-import EditContact from "./EditContact";
-import DataTable from 'react-data-table-component';
-import { Container, Form, Card, Nav, Navbar } from 'react-bootstrap';
+import AddUser from "./AddUser";
+import UserList from "./UserList";
+import UserDetail from "./UserDetail";
+import EditUser from "./EditUser";
+
+
 
 function App() {
-  const LOCAL_STORAGE_KEY = "contacts";
-  const [contacts, setContacts] = useState([]);
+  const LOCAL_STORAGE_KEY = "users";
+  const [users, setUsers] = useState([]);
 
-  //RetrieveContacts
-  const retrieveContacts = async () => {
-    const response = await api.get("/contacts");
+  const columns = [
+    {
+        name: "Código",
+        selector: "id",
+        sortable: true,
+    },
+    {
+        name: "Nome",
+        selector: "name",
+        sortable: true,
+    },
+    {
+        name: "E-mail",
+        selector: "email",
+        sortable: true,
+    },
+    {
+      name: "Empresa",
+      selector: "empresa",
+      sortable: true,
+    },
+    {
+      name: "CPF",
+      selector: "cpf",
+      sortable: true,
+    },
+    {
+        name: "Ações",
+        selector: "price",
+        sortable: true,
+    }
+]
+
+  const retrieveUsers = async () => {
+    const response = await api.get("/users");
     return response.data;
   };
 
-  const addContactHandler = async (contact) => {
-    console.log(contact);
+  const addUserHandler = async (user) => {
+    console.log(user);
     const request = {
       id: uuid(),
-      ...contact,
+      ...user,
     };
 
-    const response = await api.post("/contacts", request);
+    const response = await api.post("/users", request);
     console.log(response);
-    setContacts([...contacts, response.data]);
+    setUsers([...users, response.data]);
   };
 
-  const updateContactHandler = async (contact) => {
-    const response = await api.put(`/contacts/${contact.id}`, contact);
+  const updateUserHandler = async (user) => {
+    const response = await api.put(`/users/${user.id}`, user);
     const { id, name, email, empresa, cpf } = response.data;
-    setContacts(
-      contacts.map((contact) => {
-        return contact.id === id ? { ...response.data } : contact;
+    setUsers(
+      users.map((user) => {
+        return user.id === id ? { ...response.data } : user;
       })
     );
   };
 
-  const removeContactHandler = async (id) => {
-    await api.delete(`/contacts/${id}`);
-    const newContactList = contacts.filter((contact) => {
-      return contact.id !== id;
+  const removeUserHandler = async (id) => {
+    await api.delete(`/users/${id}`);
+    const newUserList = users.filter((user) => {
+      return user.id !== id;
     });
 
-    setContacts(newContactList);
+    setUsers(newUserList);
   };
 
   useEffect(() => {
-    // const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    // if (retriveContacts) setContacts(retriveContacts);
-    const getAllCOntacts = async () => {
-      const allContacts = await retrieveContacts();
-      if (allContacts) setContacts(allContacts);
+    const getAllUSers = async () => {
+      const allUsers = await retrieveUsers();
+      if (allUsers) setUsers(allUsers);
     };
 
-    getAllCOntacts();
+    getAllUSers();
   }, []);
 
   useEffect(() => {
-    //localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
-  }, [contacts]);
-
-  const BootyCheckbox = React.forwardRef(({ onClick, ...rest }, ref) => (
-    <div className="custom-control custom-checkbox">
-        <input type="checkbox"
-            className="custom-control-input"
-            ref={ref}
-            {...rest}
-        />
-        <label className="custom-control-label" onClick={onClick} />
-    </div>
-))
+    
+  }, [users]);
 
 return (
   <div className="ui container">
     <Router>
       <Header />
+      
+       
       <Switch>
+        
+        
         <Route
           path="/"
           exact
+          
           render={(props) => (
-            <ContactList
+            <UserList
               {...props}
-              contacts={contacts}
-              getContactId={removeContactHandler}
+              users={users}
+              getUserId={removeUserHandler}
             />
           )}
         />
         <Route
           path="/add"
           render={(props) => (
-            <AddContact {...props} addContactHandler={addContactHandler} />
+            <AddUser {...props} addUserHandler={addUserHandler} />
           )}
         />
 
         <Route
           path="/edit"
           render={(props) => (
-            <EditContact
+            <EditUser
               {...props}
-              updateContactHandler={updateContactHandler}
+              updateUserHandler={updateUserHandler}
             />
           )}
         />
-
-        <Route path="/contact/:id" component={ContactDetail} />
-      </Switch>             
+        
+        <Route path="/user/:id" component={UserDetail} />
+        
+      </Switch>
+         
     </Router>
     
   </div>
